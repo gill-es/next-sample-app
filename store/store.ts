@@ -27,13 +27,6 @@ const store = configureStore({
   middleware: [ReduxThunk],
 });
 
-export const makeStore = () =>
-  configureStore({
-    reducer: {
-      posts: postSlice.reducer,
-    },
-  });
-
-export const wrapper = createWrapper(makeStore, { debug: true });
+export const wrapper = createWrapper(() => store, { debug: true });
 
 export default store;
