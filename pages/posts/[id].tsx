@@ -1,5 +1,4 @@
 import Layout from "../../components/layout";
-import { getAllPostIds } from "../../lib/posts";
 import Head from "next/head";
 import Date from "../../components/date";
 import utilStyles from "../../styles/utils.module.css";
@@ -27,15 +26,7 @@ const Post = () => {
   );
 };
 
-export const getStaticPaths: GetStaticPaths = async () => {
-  const paths = getAllPostIds();
-  return {
-    paths,
-    fallback: false,
-  };
-};
-
-export const getStaticProps = wrapper.getStaticProps(store => async ({ params }) => {
+export const getStaticProps = wrapper.getStaticProps((store) => async ({ params }) => {
   if (params?.id) {
     const response = await fetch(`http://localhost:3000/api/getPost?id=${params.id}`);
     const data = await response.json();

@@ -1,14 +1,20 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { HYDRATE } from "next-redux-wrapper";
-import { AppDispatch, AppThunk } from "../store/store";
+import { AppThunk } from "../store/store";
 import { PostData } from "../types/posts";
 
 const initialState: any = {};
 
 const fetchPost =
   (post: PostData): AppThunk =>
-  async (dispatch: AppDispatch) => {
+  async (dispatch) => {
     dispatch(postSlice.actions.post(post));
+  };
+
+const fetchPosts =
+  (posts: PostData[]): AppThunk =>
+  async (dispatch) => {
+    dispatch(postSlice.actions.posts(posts));
   };
 
 export const postSlice = createSlice({
@@ -21,13 +27,20 @@ export const postSlice = createSlice({
         post: action.payload,
       };
     },
+    posts(state, action) {
+      return {
+        ...state,
+        posts: action.payload,
+      };
+    },
   },
   extraReducers: {
     [HYDRATE]: (state, action) => {
       const nextState = { ...state };
 
       if (action.payload.posts) {
-        const { post } = action.payload.posts;
+        const { posts, post } = action.payload.posts;
+        nextState.posts = posts;
         nextState.post = post;
       }
 
@@ -41,4 +54,5 @@ export const postSlice = createSlice({
 
 export default {
   fetchPost,
+  fetchPosts,
 };
