@@ -5,7 +5,7 @@ import Date from "../../components/date";
 import utilStyles from "../../styles/utils.module.css";
 import { GetStaticPaths } from "next";
 import { useAppSelector } from "../../hooks/redux";
-import { AppState, wrapper } from "../../store/store";
+import { wrapper } from "../../store/store";
 import Posts from "../../slices/posts";
 
 const post = {
