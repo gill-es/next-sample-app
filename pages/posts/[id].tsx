@@ -8,14 +8,9 @@ import { useAppSelector } from "../../hooks/redux";
 import { wrapper } from "../../store/store";
 import Posts from "../../slices/posts";
 
-const post = {
-  title: "subtitle",
-  date: null,
-  contentHtml: "sample content"
-}
-
 const Post = () => {
   const post = useAppSelector(state => state.posts.post)
+  
   return (
     <Layout>
         <Head>
