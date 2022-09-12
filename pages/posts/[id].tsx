@@ -6,13 +6,14 @@ import { GetStaticPaths } from "next";
 import { useAppSelector } from "../../hooks/redux";
 import { wrapper } from "../../store/store";
 import Posts from "../../slices/posts";
+import { ObjectWithId } from "../../types/generics";
 
 const Post = () => {
   const post = useAppSelector(state => state.posts.post)
-  
+
   return (
     <Layout>
-        <Head>
+      <Head>
         <title>{post?.title}</title>
       </Head>
       <article>
@@ -24,6 +25,19 @@ const Post = () => {
       </article>
     </Layout>
   );
+};
+
+export const getStaticPaths: GetStaticPaths = async (context) => {
+  const response = await fetch(`http://localhost:3000/api/getPosts`);
+  const data = await response.json();
+  const pages = data.map((page: ObjectWithId) => ({
+    params: { id: page.id }
+  }))
+
+  return {
+    paths: pages,
+    fallback: false,
+  };
 };
 
 export const getStaticProps = wrapper.getStaticProps((store) => async ({ params }) => {
