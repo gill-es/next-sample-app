@@ -1,31 +1,32 @@
 import Layout from "../../components/layout";
-import { getAllPostIds, getPostData } from "../../lib/posts";
+import { getAllPostIds } from "../../lib/posts";
 import Head from "next/head";
 import Date from "../../components/date";
 import utilStyles from "../../styles/utils.module.css";
 import { GetStaticPaths } from "next";
 import { useAppSelector } from "../../hooks/redux";
-import { wrapper } from "../../store/store";
+import { AppState, wrapper } from "../../store/store";
 import Posts from "../../slices/posts";
 
-type PostProps = {
-  postId: number;
-};
+const post = {
+  title: "subtitle",
+  date: null,
+  contentHtml: "sample content"
+}
 
-const Post = (props: PostProps) => {
-  const post = useAppSelector((state) => state.post);
-
+const Post = () => {
+  const post = useAppSelector(state => state.posts.post)
   return (
     <Layout>
-      <Head>
-        <title>{post.title}</title>
+        <Head>
+        <title>{post?.title}</title>
       </Head>
       <article>
-        <h1 className={utilStyles.headingXl}>{post.title}</h1>
+        <h1 className={utilStyles.headingXl}>{post?.title}</h1>
         <div className={utilStyles.lightText}>
-          <Date dateString={post.date} />
+          {post?.date && <Date dateString={post.date} />}
         </div>
-        <div dangerouslySetInnerHTML={{ __html: post.contentHtml }} />
+        {post?.contentHtml && <div dangerouslySetInnerHTML={{ __html: post?.contentHtml }} />}
       </article>
     </Layout>
   );
@@ -39,11 +40,15 @@ export const getStaticPaths: GetStaticPaths = async () => {
   };
 };
 
-// export const getStaticProps = wrapper.getServerSideProps((store) => () => {
-//   store.dispatch(Posts.getPost({ params: { id: 1 } }));
-//   return {
-//     props: {},
-//   };
-// });
+export const getStaticProps = wrapper.getStaticProps(store => async ({ params }) => {
+  if (params?.id) {
+    const response = await fetch(`http://localhost:3000/api/getPost?id=${params.id}`);
+    const data = await response.json();
+    store.dispatch(Posts.fetchPost(data));
+  }
+  return {
+    props: {},
+  };
+});
 
 export default Post;

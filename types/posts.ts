@@ -5,3 +5,7 @@ export type PostData = ObjectWithId & {
   title: string;
   contentHtml: string;
 };
+
+export type PostState = {
+  post: PostData | null;
+};

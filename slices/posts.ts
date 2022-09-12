@@ -1,39 +1,44 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { ObjectWithId } from "../types/generics";
+import { createSlice } from "@reduxjs/toolkit";
+import { HYDRATE } from "next-redux-wrapper";
+import { AppDispatch, AppThunk } from "../store/store";
 import { PostData } from "../types/posts";
-import { createWrapper, HYDRATE } from "next-redux-wrapper";
 
-type PostState = {
-  post: null | PostData;
-};
+const initialState: any = {};
 
-const initialState: PostState = {
-  post: null,
-};
+const fetchPost =
+  (post: PostData): AppThunk =>
+  async (dispatch: AppDispatch) => {
+    dispatch(postSlice.actions.post(post));
+  };
 
-const getPost = createAsyncThunk(
-  "posts/getPost",
-  async ({ params }: { params: ObjectWithId }) => {
-    // const postData = await getPostData(params.id as number);
-    // return postData;
-  }
-);
-
-export const posts = createSlice({
-  name: "posts",
+export const postSlice = createSlice({
+  name: "post",
   initialState,
-  reducers: {},
-  extraReducers: {
-    [HYDRATE]: (state, action) => {
-      console.log("HYDRATE", state, action.payload);
+  reducers: {
+    post(state, action) {
       return {
         ...state,
-        ...action.payload.subject,
+        post: action.payload,
+      };
+    },
+  },
+  extraReducers: {
+    [HYDRATE]: (state, action) => {
+      const nextState = { ...state };
+
+      if (action.payload.posts) {
+        const { post } = action.payload.posts;
+        nextState.post = post;
+      }
+
+      return {
+        ...state,
+        ...nextState,
       };
     },
   },
 });
 
 export default {
-  getPost,
+  fetchPost,
 };

@@ -6,10 +6,20 @@ import {
 } from "@reduxjs/toolkit";
 import ReduxThunk from "redux-thunk";
 import { createWrapper } from "next-redux-wrapper";
-import { posts } from "../slices/posts";
+import { postSlice } from "../slices/posts";
+
+export type AppStore = ReturnType<typeof makeStore>;
+export type AppState = ReturnType<AppStore["getState"]>;
+export type AppThunk<ReturnType = void> = ThunkAction<
+  ReturnType,
+  AppState,
+  unknown,
+  Action
+>;
+export type AppDispatch = typeof store.dispatch;
 
 const reducer = combineReducers({
-  posts: posts.reducer,
+  posts: postSlice.reducer,
 });
 
 const store = configureStore({
@@ -17,18 +27,11 @@ const store = configureStore({
   middleware: [ReduxThunk],
 });
 
-export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;
-export type AppThunk<ReturnType = void> = ThunkAction<
-  ReturnType,
-  RootState,
-  unknown,
-  Action<string>
->;
-
 export const makeStore = () =>
   configureStore({
-    reducer,
+    reducer: {
+      posts: postSlice.reducer,
+    },
   });
 
 export const wrapper = createWrapper(makeStore, { debug: true });
